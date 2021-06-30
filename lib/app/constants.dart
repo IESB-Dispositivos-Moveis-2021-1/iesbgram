@@ -18,4 +18,9 @@ class _Routes {
   final LOGIN = '/login';
   final FORGOT_PASSWORD = '/login/forgot-password';
 
+  final FEED = '/feed';
+  final SEARCH = '/search';
+  final PROFILE = '/profile';
+  final EDIT_PROFILE = '/edit';
+
 }
