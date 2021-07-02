@@ -11,7 +11,7 @@ class AppWidget extends StatelessWidget {
       title: 'Flutter Slidy',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.light,
+      themeMode: ThemeMode.system,
     ).modular();
   }
 }
