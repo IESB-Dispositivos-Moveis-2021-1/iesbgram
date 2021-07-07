@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:iesbgram/app/modules/profile/padding_widget.dart';
 import 'package:iesbgram/app/modules/profile/user_store.dart';
 import 'package:mobx/mobx.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditPage extends StatefulWidget {
   final String title;
@@ -18,6 +19,8 @@ class EditPageState extends ModularState<EditPage, UserStore> {
 
   late final FocusNode _nameFocusNode;
   late final FocusNode _bioFocusNode;
+
+  late final ImagePicker _picker;
 
   @override
   void initState() {
@@ -36,6 +39,7 @@ class EditPageState extends ModularState<EditPage, UserStore> {
       _bioController.text = store.bio ?? '';
     });
 
+    _picker = ImagePicker();
   }
 
   @override
@@ -75,14 +79,79 @@ class EditPageState extends ModularState<EditPage, UserStore> {
           SizedBox(height: 24),
           CircleAvatar(
             radius: 40,
-            child: CircleAvatar(
-              backgroundImage: AssetImage('assets/sem_foto.jpg'),
-              radius: 38,
-            ),
+            child: Observer(builder: (_) {
+              if (store.user!.photoURL != null && store.user!.photoURL!.isNotEmpty) {
+                return CircleAvatar(
+                  radius: 38,
+                  backgroundImage: NetworkImage(store.user!.photoURL!),
+                );
+              }
+              return CircleAvatar(
+                radius: 38,
+                backgroundImage: AssetImage('assets/sem_foto.jpg'),
+              );
+            }),
           ),
           TextButton(
             child: Text('Alterar foto do perfil'),
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (ctx) {
+                  return Container(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InkWell(
+                          child: Row(
+                            children: [
+                              Icon(Icons.camera_alt_outlined),
+                              SizedBox(width: 16),
+                              Text('Usar Câmera')
+                            ],
+                          ),
+                          onTap: () async {
+                            final picturePath = await _picker.getImage(
+                                source: ImageSource.camera,
+                                imageQuality: 50,
+                                maxWidth: 1920,
+                                maxHeight: 1200
+                            );
+                            if (picturePath != null) {
+                              store.updateProfilePicture(picturePath.path);
+                            }
+                            Navigator.of(ctx).pop();
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        InkWell(
+                          child: Row(
+                            children: [
+                              Icon(Icons.photo_library_outlined),
+                              SizedBox(width: 16),
+                              Text('Escolher da biblioteca')
+                            ],
+                          ),
+                          onTap: () async {
+                            final picturePath = await _picker.getImage(
+                              source: ImageSource.gallery,
+                              imageQuality: 50,
+                              maxWidth: 1920,
+                              maxHeight: 1200
+                            );
+                            if (picturePath != null) {
+                              store.updateProfilePicture(picturePath.path);
+                            }
+                            Navigator.of(ctx).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              );
+            },
           ),
           _EditField(
             label: 'Nome:',

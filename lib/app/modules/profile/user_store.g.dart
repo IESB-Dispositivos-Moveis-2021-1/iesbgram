@@ -9,6 +9,14 @@ part of 'user_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$UserStore on _UserStoreBase, Store {
+  Computed<Stream<QuerySnapshot<Object?>>>? _$postsComputed;
+
+  @override
+  Stream<QuerySnapshot<Object?>> get posts => (_$postsComputed ??=
+          Computed<Stream<QuerySnapshot<Object?>>>(() => super.posts,
+              name: '_UserStoreBase.posts'))
+      .value;
+
   final _$userAtom = Atom(name: '_UserStoreBase.user');
 
   @override
@@ -79,6 +87,29 @@ mixin _$UserStore on _UserStoreBase, Store {
         .run(() => super.updateProfile(displayName: displayName, bio: bio));
   }
 
+  final _$updateProfilePictureAsyncAction =
+      AsyncAction('_UserStoreBase.updateProfilePicture');
+
+  @override
+  Future<void> updateProfilePicture(String filePath) {
+    return _$updateProfilePictureAsyncAction
+        .run(() => super.updateProfilePicture(filePath));
+  }
+
+  final _$postPictureAsyncAction = AsyncAction('_UserStoreBase.postPicture');
+
+  @override
+  Future<void> postPicture(String filePath) {
+    return _$postPictureAsyncAction.run(() => super.postPicture(filePath));
+  }
+
+  final _$logoffAsyncAction = AsyncAction('_UserStoreBase.logoff');
+
+  @override
+  Future<void> logoff() {
+    return _$logoffAsyncAction.run(() => super.logoff());
+  }
+
   final _$_UserStoreBaseActionController =
       ActionController(name: '_UserStoreBase');
 
@@ -110,7 +141,8 @@ mixin _$UserStore on _UserStoreBase, Store {
 user: ${user},
 bio: ${bio},
 loading: ${loading},
-error: ${error}
+error: ${error},
+posts: ${posts}
     ''';
   }
 }
